@@ -8,8 +8,7 @@ class Generator:
         df = data
 
         schema_info = "\n".join([f"{col}: {df[col].dtype}" for col in df.columns])
-        self.key = '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'
-
+        self.key = ''
         sample_data = df.head(20).to_string(index=False)
         self.prompt = f"""
             Here is a sample of data with 20 rows and its schema:

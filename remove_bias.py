@@ -17,6 +17,7 @@ warnings.filterwarnings("ignore")
 def transform(data, target):
     if not target:
         target = data.columns[-1]
+
     generator = Generator(data, target)
     result = generator.call_openai_api(
                 engine= 'gpt-4o-mini',
@@ -35,7 +36,8 @@ def transform(data, target):
 
     df, y = clean_data(data, target)
     df = pd.concat([df, y], axis=1)
-    print(df.describe())
+    for col in df.columns:
+        df = df[df[col].notna()]
     biased_columns = []
     for line in lines:
         name = line.split(':')[0].replace('- ', '').strip()
@@ -81,8 +83,6 @@ def transform(data, target):
         resampled_df = pd.concat([X,y], axis=1)
         return resampled_df
 
-    for col in df.columns:
-        df = df[df[col].notna()]
     mitigated_df = mitigate_bias(df, target, biased_columns)
 
     print('After mitigation : ')
@@ -94,5 +94,9 @@ def transform(data, target):
     except:
         print('... Not detecting for multi-class')
 
-data = pd.read_csv('adult.csv')
-transform(data, '')
+filename = input('Enter filename: ')
+if filename=='':
+    filename = 'adult.csv'
+target = input('Target Column: ')
+data = pd.read_csv(filename)
+transform(data, target)
